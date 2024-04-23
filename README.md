@@ -5,3 +5,5 @@ Playground to learn go.
 
 ## Tutorials I am following here:
 - https://dev.to/aurelievache/learning-go-by-examples-part-3-create-a-cli-app-in-go-1h43
+- https://go.dev/tour/welcome/1
+- https://developers.google.com/calendar/api/quickstart/go
