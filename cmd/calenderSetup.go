@@ -81,7 +81,7 @@ func getCalenderService() *calendar.Service {
         }
 
         // If modifying these scopes, delete your previously saved token.json.
-        config, err := google.ConfigFromJSON(b, calendar.CalendarReadonlyScope)
+        config, err := google.ConfigFromJSON(b, calendar.CalendarEventsScope)
         if err != nil {
                 log.Fatalf("Unable to parse client secret file to config: %v", err)
         }
@@ -93,4 +93,33 @@ func getCalenderService() *calendar.Service {
         }
 
 	return srv
+}
+
+// getJsonStringForEvent returns the calender event encoded as json
+func getJsonStringForEvent(event calendar.Event) string {
+        startDate := event.Start.DateTime
+        if startDate == "" {
+                startDate = event.Start.Date
+        }
+
+        endDate := event.Start.DateTime
+        if endDate == "" {
+                endDate = event.Start.Date
+        }
+
+        entry := CalendarEntry {
+                Id: event.Id,
+                Summary: event.Summary,
+                StartDateTime: startDate,
+                EndDateTime: startDate,
+        }
+        jsonBytes, _ := json.Marshal(entry)
+        return string(jsonBytes)
+}
+
+type CalendarEntry struct {
+        Id string
+        Summary string
+        StartDateTime string
+        EndDateTime string
 }

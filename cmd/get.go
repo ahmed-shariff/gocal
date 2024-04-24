@@ -4,7 +4,6 @@ Copyright © 2024 Shariff AM Faleel <shariff.mfa@outlook.com>
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -58,20 +57,7 @@ func getCalenderData(cmd *cobra.Command, args []string) {
                 fmt.Println("No upcoming events found.")
         } else {
                 for _, item := range events.Items {
-                        date := item.Start.DateTime
-                        if date == "" {
-                                date = item.Start.Date
-                        }
-                        // fmt.Printf("%v (%v) ---- %v \n", item.Summary, date, item.Id)
-			entry := CalendarEntry {
-				"Id": item.Id,
-				"Summary": item.Summary,
-				"DateTime": date,
-			}
-			s, _ := json.Marshal(entry)
-			fmt.Println(string(s))
+			fmt.Println(getJsonStringForEvent(*item))
                 }
         }
 }
-
-type CalendarEntry map[string]string
