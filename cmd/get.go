@@ -52,10 +52,7 @@ func getCalenderData(cmd *cobra.Command, args []string) {
                 log.Fatalf("Unable to retrieve next ten of the user's events: %v", err)
         }
 
-        fmt.Println("Upcoming events:")
-        if len(events.Items) == 0 {
-                fmt.Println("No upcoming events found.")
-        } else {
+        if len(events.Items) != 0 {
                 for _, item := range events.Items {
 			fmt.Println(getJsonStringForEvent(*item))
                 }

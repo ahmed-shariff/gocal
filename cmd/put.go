@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"regexp"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -44,7 +45,13 @@ func init() {
 func putCalenderData(cmd *cobra.Command, args []string) {
 	var data CalendarEntry
 	json.Unmarshal([]byte(strings.Join(args, "")), &data)
+
+	if !regexp.MustCompile(`^[a-zA-Z0-9]*$`).MatchString(data.Id) {
+		log.Fatalf("Id has non alphanumeric chars. Got: %v", data.Id)
+	}
+
 	event := calendar.Event{
+		Id: data.Id,
 		Summary: data.Summary,
 		Start: &calendar.EventDateTime{
 			DateTime: data.StartDateTime,
@@ -53,7 +60,6 @@ func putCalenderData(cmd *cobra.Command, args []string) {
 			DateTime: data.EndDateTime,
 		},
 	}
-	fmt.Println(event.Summary, event.Id, event.Start.DateTime)
 
 	var (
 		err           error
@@ -62,22 +68,17 @@ func putCalenderData(cmd *cobra.Command, args []string) {
 
 	srv := getCalenderService()
 	// '{\"Summary\":\"test event\", \"StartDateTime\":\"2024-04-25T12:00:00-07:00\", \"EndDateTime\":\"2024-04-25T13:00:00-07:00\", \"Id\":\"58b2ca69_4620_4c4f_8dj26_72b3375b5bee\"}'
-	fmt.Printf("Trying add event with id %v\n", event.Id)
 	returnedEvent, err = srv.Events.Get("primary", event.Id).Do()
 
 	if err != nil {
 		returnedEvent, err = srv.Events.Insert("primary", &event).Do()
 		if err != nil {
-			log.Fatalf("Failed with error %v", err)
-		} else {
-			log.Println("Added new event")
+			log.Fatalf("Inserting Failed with error %v", err)
 		}
 	} else {
 		returnedEvent, err = srv.Events.Update("primary", returnedEvent.Id, &event).Do()
 		if err != nil {
-			log.Fatalf("Failed with error %v", err)
-		} else {
-			log.Println("Updated event")
+			log.Fatalf("Updating Failed with error %v", err)
 		}
 	}
 	fmt.Println(getJsonStringForEvent(*returnedEvent))
