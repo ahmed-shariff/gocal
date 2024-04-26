@@ -44,7 +44,10 @@ func init() {
 
 func putCalenderData(cmd *cobra.Command, args []string) {
 	var data CalendarEntry
-	json.Unmarshal([]byte(strings.Join(args, "")), &data)
+	err_ := json.Unmarshal([]byte(strings.Join(args, "")), &data)
+	if err_ != nil {
+		log.Fatalf("Failed to decode json %v", err_)
+	}
 
 	if !regexp.MustCompile(`^[a-zA-Z0-9]*$`).MatchString(data.Id) {
 		log.Fatalf("Id has non alphanumeric chars. Got: %v", data.Id)
